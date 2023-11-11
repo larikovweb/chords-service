@@ -1,6 +1,12 @@
 import styled from '@emotion/styled';
 import { FC, useEffect, useState } from 'react';
-import { ButtonTransparent, Container, GeneralBox, GeneralLabel } from '../styled/components';
+import {
+  ButtonTransparent,
+  Container,
+  GeneralBox,
+  GeneralLabel,
+  Select,
+} from '../styled/components';
 import { HelmetHead } from '../components/HelmetHead';
 import { $phoneWidth, $primaryColor } from '../styled/variables';
 import { trackAPI } from '../services/TracksService';
@@ -10,32 +16,9 @@ import { InputField } from '../components/fields/InputField';
 import { IconArrow, IconPause } from '../icons';
 import { rem } from '../styled/mixins';
 
-const chords = [
-  'Am',
-  'Bm',
-  'Hm',
-  'Cm',
-  'Cm#',
-  'Dm',
-  'Dm#',
-  'Em',
-  'Fm',
-  'Fm#',
-  'Gm',
-  'Gm#',
-  'A',
-  'B',
-  'H',
-  'C',
-  'C#',
-  'D',
-  'D#',
-  'E',
-  'F',
-  'F#',
-  'G',
-  'G#',
-];
+const chords = ['A', 'B', 'H', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+
+const chordsM = ['Am', 'Bm', 'Hm', 'Cm', 'Cm#', 'Dm', 'Dm#', 'Em', 'Fm', 'Fm#', 'Gm', 'Gm#'];
 
 const Track: FC = () => {
   const trackId = useParams<{ id: string }>().id;
@@ -62,7 +45,11 @@ const ViewResult: FC<{ track: ITrack[] }> = ({ track }) => {
   const [scrollSpeed, setScrollSpeed] = useState(0);
   const [isPaused, setPaused] = useState(false);
   const [fontSize, setFontSize] = useState(16);
-  const [transposeAmount, setTransposeAmount] = useState(0);
+  const activeChords = chords.includes(selectedTrack.tonality) ? chords : chordsM;
+
+  const [transposeAmount, setTransposeAmount] = useState(
+    activeChords.findIndex((chord) => chord === selectedTrack.tonality),
+  );
 
   const handleScrollTop = () => {
     setScrollSpeed((state) => state + 1);
@@ -126,20 +113,20 @@ const ViewResult: FC<{ track: ITrack[] }> = ({ track }) => {
         <GeneralLabel>{selectedTrack.title}</GeneralLabel>
         <Settings>
           <InputField label="Тональность">
-            <SelectWrapper
+            <Select
               value={transposeAmount}
               onChange={(val) => setTransposeAmount(Number(val.target.value))}>
-              {chords.map((chord, i) => (
+              {activeChords.map((chord, i) => (
                 <Option key={chord} value={i}>
                   {chord}
                 </Option>
               ))}
-            </SelectWrapper>
+            </Select>
             <input
               style={{ width: '100%' }}
               type="range"
               min={0}
-              max={chords.length - 1}
+              max={activeChords.length - 1}
               value={transposeAmount}
               onChange={(e) => setTransposeAmount(Number(e.target.value))}
             />
@@ -250,33 +237,6 @@ const Row = styled.div`
     &:not(:last-child) {
       margin-right: 1rem;
     }
-  }
-`;
-
-const SelectWrapper = styled.select`
-  appearance: none;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.25rem;
-  border: 0.0625rem solid #ccc;
-  background-color: #fff;
-  color: #333;
-  font-size: 0.75rem;
-  cursor: pointer;
-  width: 100%;
-
-  position: relative;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M7 10l5 5 5-5z" /></svg>');
-  background-repeat: no-repeat;
-  background-position: right 0.5rem center;
-  background-size: 1rem;
-  padding-right: 1.75rem;
-  transition: box-shadow 0.3s;
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.3);
   }
 `;
 

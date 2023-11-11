@@ -8,4 +8,5 @@ export interface ITrack {
   title: string;
   artist: string;
   blocks: IBlock[];
+  tonality: string;
 }

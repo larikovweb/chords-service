@@ -8,6 +8,7 @@ import {
   GeneralBox,
   GeneralLabel,
   Input,
+  Select,
   TextArea,
 } from '../styled/components';
 import { IconAdd, IconDelete } from '../icons';
@@ -19,6 +20,33 @@ type Props = {
   editableTrack?: ITrack;
   setEditableTrack: React.Dispatch<React.SetStateAction<ITrack | undefined>>;
 };
+
+const chords = [
+  'A',
+  'B',
+  'H',
+  'C',
+  'C#',
+  'D',
+  'D#',
+  'E',
+  'F',
+  'F#',
+  'G',
+  'G#',
+  'Am',
+  'Bm',
+  'Hm',
+  'Cm',
+  'Cm#',
+  'Dm',
+  'Dm#',
+  'Em',
+  'Fm',
+  'Fm#',
+  'Gm',
+  'Gm#',
+];
 
 export const FormTrack: FC<Props> = ({ editableTrack, setEditableTrack }) => {
   const [createTrack] = trackAPI.useCreateTrackMutation();
@@ -53,6 +81,7 @@ export const FormTrack: FC<Props> = ({ editableTrack, setEditableTrack }) => {
       setValue('title', editableTrack.title);
       setValue('artist', editableTrack.artist);
       setValue('blocks', editableTrack.blocks);
+      setValue('tonality', editableTrack.tonality);
       setTextBlocks([...editableTrack.blocks.map((b) => b.title)]);
     }
   }, [editableTrack, setValue]);
@@ -92,6 +121,15 @@ export const FormTrack: FC<Props> = ({ editableTrack, setEditableTrack }) => {
               {...register('artist', { required: 'Имя исполнителя обязательно' })}
               placeholder="Имя"
             />
+          </InputField>
+          <InputField label="Введите оригинальную тональность" error={errors.tonality?.message}>
+            <Select {...register('tonality', { required: 'Тональность трека обязательна' })}>
+              {chords.map((chord) => (
+                <option key={chord} value={chord}>
+                  {chord}
+                </option>
+              ))}
+            </Select>
           </InputField>
         </RowInfo>
       </GeneralBox>
