@@ -2,14 +2,39 @@ import styled from '@emotion/styled';
 import { FC } from 'react';
 import { Container, GeneralBox, GeneralLabel } from '../styled/components';
 import { HelmetHead } from '../components/HelmetHead';
-import { TrackRow } from '../components/TrackRow';
-import { trackAPI } from '../services/TracksService';
-const Tracks: FC = () => {
-  const { data: tracks, error, isLoading } = trackAPI.useFetchAllTracksQuery(1000);
+import { getData } from '../services/firebaseService';
+import useFetchData from '../hooks/useFetchData';
 
-  const loading = isLoading && <div>Идет загрузка...</div>;
-  const errorMessage = error && <div>Произошла ошибка при загрузке объявлений</div>;
-  const content = tracks && tracks.map((track) => <TrackRow key={track.id} track={track} />);
+export interface IExercise {
+  name: string;
+  reps: number;
+  myReps: number | null;
+}
+
+export interface IWorkout {
+  id: number | string;
+  title: string;
+  url: string;
+  exercises: IExercise[];
+}
+
+export interface ICourse {
+  id: number | string;
+  name: string;
+  img: string;
+  description: string;
+  suitableFor: string[];
+  focus: string[];
+  workouts: IWorkout[];
+}
+
+const Tracks: FC = () => {
+  const { loading, data, error, refetch } = useFetchData<ICourse>(getData, 'courses');
+  console.log(data, loading, error, refetch);
+
+  // const loading = isLoading && <div>Идет загрузка...</div>;
+  // const errorMessage = error && <div>Произошла ошибка при загрузке объявлений</div>;
+  // const content = tracks && tracks.map((track) => <TrackRow key={track.id} track={track} />);
 
   return (
     <>
@@ -17,9 +42,9 @@ const Tracks: FC = () => {
       <Wrapper>
         <GeneralBox>
           <GeneralLabel>Треки</GeneralLabel>
-          {loading}
+          {/* {loading}
           {errorMessage}
-          {content}
+          {content} */}
         </GeneralBox>
       </Wrapper>
       ;
